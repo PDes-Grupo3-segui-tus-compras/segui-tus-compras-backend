@@ -1,66 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Segui tus compras:
 
-## About Laravel
+## Tecnologias
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Vue
+- Vite
+- Prime Vue
+- MySQL
+- Laravel 12
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalacion
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Requisitos**
 
-## Learning Laravel
+- Tener docker instalado en la PC.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Instalar composer y laravel (Necesitamos mejorar esto para no requerirlo):
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+  - (Windows) Correr en una powershell como administrador:
+  
+      Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol =  [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))
+  
+  - composer global require laravel/installer
+  
+- Tener el proyecto del backend y del frontend clonados a la misma altura en el directorio. 
+- Tener un archivo docker-compose.yml con el siguiente contenido a la misma altura que los dos proyectos:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+version: '3.8'
 
-## Laravel Sponsors
+services:
+    app:
+        image: ghcr.io/trejojulian/segui-tus-compras-backend:1.0
+        container_name: laravel_app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./segui-tus-compras-backend:/var/www
+        networks:
+            - app_network
+        depends_on:
+            - db
+        environment:
+            - DB_HOST=db
+            - DB_DATABASE=laravel
+            - DB_USERNAME=root
+            - DB_PASSWORD=root
+        ports:
+            - "8000:8000"
+        command: php artisan serve --host=0.0.0.0 --port=8000
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    frontend:
+        image: ghcr.io/trejojulian/segui-tus-compras-frontend:1.0
+        container_name: vue_app
+        restart: unless-stopped
+        ports:
+            - "5173:5173"
+        networks:
+            - app_network
+        depends_on:
+            - app
+        environment:
+            - VITE_HOST=0.0.0.0
+            - CHOKIDAR_USEPOLLING=true
+        volumes:
+            - ./segui-tus-compras-frontend:/app
+            - /app/node_modules
+        working_dir: /app
+        command: npm run dev 
 
-### Premium Partners
+    db:
+        image: mysql:8
+        container_name: mysql_db
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: laravel
+        ports:
+            - "3306:3306"
+        networks:
+            - app_network
+        volumes:
+            - mysql_data:/var/lib/mysql
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+volumes:
+    mysql_data:
 
-## Contributing
+networks:
+    app_network:
+        driver: bridge
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
 
-## Code of Conduct
+**Pasos**:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- cd al proyecto del backend (mejorar para que lo haga docker)
+- composer install (mejorar para que lo haga docker)
+- copiar el archivo .env.example en un archivo .env (mejorar para que lo haga docker)
+- en el archivo .env cambiar las variables de la base de datos a las siguientes (mejorar para que lo haga docker)
+    - DB_CONNECTION=mysql
+    - DB_HOST=db
+    - DB_PORT=3306
+    - DB_DATABASE=laravel
+    - DB_USERNAME=root
+    - DB_PASSWORD=root
+- php artisan key:generate (mejorar para que lo haga docker)
+- Vincular docker con el usuario de github: `docker login ghcr.io -u {usuario de github sin mayusculas} -p {un token con todos los permisos}`
+- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-frontend:1.0` (Pedir permisos para pullear la misma)
+- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-backend:1.0` (Pedir permisos para pullear la misma)
+- Volver a la carpeta donde estan los proyectos y el docker compose
+- docker-compose up --build -d
+- docker-compose exec app php artisan migrate --force
 
-## Security Vulnerabilities
+Puede darse el caso donde ya tengamos el puerto de la base de datos expuesto, en ese caso detener el proceso que ocupa el puerto 3306 y volver a buildear y levantar.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Como ver el proyecto funcionando:
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Una vez levantados los contenedores ir http://localhost:5173/
