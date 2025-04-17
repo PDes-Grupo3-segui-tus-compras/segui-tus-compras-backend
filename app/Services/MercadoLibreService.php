@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\MeliListProductResource;
+use App\Http\Resources\ProductResource;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
 
@@ -39,7 +40,7 @@ class MercadoLibreService
             ])
             ->withQueryParameters([
                 'site_id' => 'MLA',
-                'status' => 'active',
+                'status' => 'actie',
                 'q' => urlencode($query),
             ])
             ->get('https://api.mercadolibre.com/products/search');
@@ -47,5 +48,17 @@ class MercadoLibreService
         $products = json_decode($response->getBody(), true);
 
         return MeliListProductResource::collection(collect($products['results']));
+    }
+
+    public function getProductInformation($id){
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->accessToken,
+        ])
+        ->get('https://api.mercadolibre.com/products/'. $id);
+
+        $product = json_decode($response->getBody(), true);
+        \Log::info('product');
+        \Log::info($product);
+        return new ProductResource($product);
     }
 }

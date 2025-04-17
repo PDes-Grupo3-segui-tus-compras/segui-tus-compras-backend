@@ -38,4 +38,17 @@ class MercadoLibreController extends Controller
         };
         
     }
+    
+    public function getProductInformation(Request $request){
+        try{
+            $product_id = $request->input('product_id');
+            $product = $this->mercadoLibreService->getProductInformation($product_id);
+            return response()->json($product);
+        }catch (RequestException $e) {
+            return response()->json([
+                'error' => 'Unable to fetch product details from Mercado Libre.',
+                'message' => $e->getMessage(),
+            ], 421);
+        };
+    }
 }
