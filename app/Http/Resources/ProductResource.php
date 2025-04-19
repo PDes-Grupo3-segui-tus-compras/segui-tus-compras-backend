@@ -7,6 +7,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
+    private function generateRandomPrice()
+    {
+        return round(mt_rand(1000, 5000) + mt_rand(0, 99) / 100, 2);
+    }
+
     public function toArray(Request $request): array
     {
            
@@ -19,7 +24,7 @@ class ProductResource extends JsonResource
             'id' => $this['id'],
             'catalog_product_id' => $this['catalog_product_id'],
             'name' => $this['name'],
-            'price' => $this['buy_box_winner']['price'] ?? null,
+            'price' => $this['buy_box_winner']['price'] ?? $this->generateRandomPrice(),
             /* If price is Null it means the product it's unavailable, and we have to do something about it :(
              */
             'warranty' => $this['buy_box_winner']['warranty'] ?? null,

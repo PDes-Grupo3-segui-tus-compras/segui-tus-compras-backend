@@ -40,6 +40,7 @@ class MercadoLibreController extends Controller
     }
     
     public function getProductInformation(Request $request){
+
         try{
             $product_id = $request->input('product_id');
             $product = $this->mercadoLibreService->getProductInformation($product_id);

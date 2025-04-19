@@ -40,13 +40,12 @@ class MercadoLibreService
             ])
             ->withQueryParameters([
                 'site_id' => 'MLA',
-                'status' => 'actie',
+                'status' => 'active',
                 'q' => urlencode($query),
             ])
             ->get('https://api.mercadolibre.com/products/search');
 
         $products = json_decode($response->getBody(), true);
-
         return MeliListProductResource::collection(collect($products['results']));
     }
 
