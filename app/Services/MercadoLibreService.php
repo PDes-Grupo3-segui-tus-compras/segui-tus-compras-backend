@@ -56,8 +56,6 @@ class MercadoLibreService
         ->get('https://api.mercadolibre.com/products/'. $id);
 
         $product = json_decode($response->getBody(), true);
-        \Log::info('product');
-        \Log::info($product);
         return new ProductResource($product);
     }
 }
