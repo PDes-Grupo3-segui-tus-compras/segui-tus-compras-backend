@@ -20,7 +20,7 @@ version: '3.8'
 
 services:
     app:
-        image: ghcr.io/trejojulian/segui-tus-compras-backend:1.1
+        image: ghcr.io/trejojulian/segui-tus-compras-backend:1.2
         container_name: laravel_app
         restart: unless-stopped
         working_dir: /var/www
@@ -38,7 +38,7 @@ services:
         command: sh -c "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"
 
     frontend:
-        image: ghcr.io/trejojulian/segui-tus-compras-frontend:1.1
+        image: ghcr.io/trejojulian/segui-tus-compras-frontend:1.2
         container_name: vue_app
         restart: unless-stopped
         ports:
