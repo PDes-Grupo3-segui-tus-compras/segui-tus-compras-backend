@@ -79,8 +79,8 @@ networks:
 **Pasos**:
 
 - Vincular docker con el usuario de github: `docker login ghcr.io -u {usuario de github sin mayusculas} -p {un token con todos los permisos}`
-- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-frontend:1.1` (Pedir permisos para pullear la misma)
-- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-backend:1.1` (Pedir permisos para pullear la misma)
+- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-frontend:1.2` (Pedir permisos para pullear la misma)
+- Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-backend:1.2` (Pedir permisos para pullear la misma)
 - docker-compose up -d
 
 Puede darse el caso donde ya tengamos el puerto de la base de datos expuesto, en ese caso detener el proceso que ocupa el puerto 3306 y volver a buildear y levantar.
