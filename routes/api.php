@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\UserController;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\MercadoLibreController;
@@ -14,5 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/search-products', [MercadoLibreController::class, 'searchProducts']);
     Route::get('/products/get-product', [MercadoLibreController::class, 'getProductInformation']);
+    Route::get('/users', [UserController::class, 'index'])->middleware(AdminMiddleware::class);
 });
 
