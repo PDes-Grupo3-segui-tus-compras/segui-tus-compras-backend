@@ -2,19 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductResource extends JsonResource
-{
-    private function generateRandomPrice()
-    {
-        return round(mt_rand(1000, 5000) + mt_rand(0, 99) / 100, 2);
-    }
+class ProductResource extends JsonResource {
 
-    public function toArray(Request $request): array
-    {
-           
+    public function toArray(Request $request): array {
+
         $attributes = [];
         foreach ($this->attributes ?? [] as $attr) {
             $attributes[$attr['id']] = $attr['value_name'];
@@ -24,7 +19,7 @@ class ProductResource extends JsonResource
             'id' => $this['id'],
             'catalog_product_id' => $this['catalog_product_id'],
             'name' => $this['name'],
-            'price' => $this['buy_box_winner']['price'] ?? $this->generateRandomPrice(),
+            'price' => $this->getPrice(),
             /* If price is Null it means the product it's unavailable, and we have to do something about it :(
              */
             'warranty' => $this['buy_box_winner']['warranty'] ?? null,
@@ -58,5 +53,20 @@ class ProductResource extends JsonResource
             }*/
             'short_description' => $this['short_description']['content']
         ];
+    }
+
+    /**
+     * @return float
+     */
+    private function getPrice(): float {
+        $existingProduct = Product::where('catalog_product_id', $this['catalog_product_id'])->first();
+
+        return $existingProduct?->price
+            ?? $this['buy_box_winner']['price']
+            ?? $this->generateRandomPrice();
+    }
+
+    private function generateRandomPrice(): float {
+        return round(mt_rand(1000, 5000) + mt_rand(0, 99) / 100, 2);
     }
 }
