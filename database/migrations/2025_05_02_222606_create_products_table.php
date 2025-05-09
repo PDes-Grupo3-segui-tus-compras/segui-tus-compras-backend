@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('catalog_product_id')->unique();
             $table->string('name');
             $table->string('image');
-            $table->text('short_description');
+            $table->text('short_description')->nullable();
             $table->float('price', 10, 2);
             $table->timestamps();
         });
