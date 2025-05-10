@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FavouriteRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
@@ -17,5 +18,9 @@ class ProductController extends Controller {
             'message' => 'Purchase was successful',
             'purchase' => $purchase,
         ], 201);
+    }
+
+    public function favourite(FavouriteRequest $request): JsonResponse {
+        return $this->service->favouriteProduct($request->validated());
     }
 }

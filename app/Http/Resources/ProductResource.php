@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class ProductResource extends JsonResource {
 
@@ -14,6 +15,8 @@ class ProductResource extends JsonResource {
         foreach ($this->attributes ?? [] as $attr) {
             $attributes[$attr['id']] = $attr['value_name'];
         }
+        $product = Product::where('catalog_product_id', $this['catalog_product_id'])->first();
+        $user = Auth::user();
 
         return [
             'id' => $this['id'],
@@ -51,7 +54,10 @@ class ProductResource extends JsonResource {
             id:
             value_name:
             }*/
-            'short_description' => $this['short_description']['content']
+            'short_description' => $this['short_description']['content'],
+            'is_favourite' => $product && $user
+                ? $user->favouriteProducts()->where('product_id', $product->id)->exists()
+                : false,
         ];
     }
 

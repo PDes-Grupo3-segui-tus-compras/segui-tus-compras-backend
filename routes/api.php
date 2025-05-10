@@ -18,5 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/get-product', [MercadoLibreController::class, 'getProductInformation']);
     Route::get('/users', [UserController::class, 'index'])->middleware(AdminMiddleware::class);
     Route::post('/purchase', [ProductController::class, 'purchase']);
+    Route::put('/products/favourite', [ProductController::class, 'favourite']);
 });
 
