@@ -15,6 +15,10 @@ class Product extends Model {
         return $this->hasMany(Purchase::class);
     }
 
+    public function opinions(): HasMany {
+        return $this->hasMany(Opinion::class);
+    }
+
     public function favouritedBy(): BelongsToMany {
         return $this->belongsToMany(User::class)->withTimestamps();
     }

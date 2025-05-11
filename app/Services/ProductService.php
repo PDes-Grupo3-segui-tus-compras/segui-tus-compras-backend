@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\Opinion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,6 +54,25 @@ class ProductService {
         return response()->json([
             'message' => 'Product added to favourites',
             'product' => $product,
+        ]);
+    }
+
+    public function createProductOpinion(array $data): Opinion {
+        $product = Product::firstOrCreate(
+            ['catalog_product_id' => $data['catalog_product_id']],
+            [
+                'name' => $data['name'],
+                'image' => $data['image'],
+                'short_description' => $data['short_description'],
+                'price' => $data['price']
+            ]
+        );
+
+        return Opinion::create([
+            'product_id' => $product->id,
+            'user_id' => Auth::id(),
+            'rating' => $data['rating'],
+            'content' => $data['content']
         ]);
     }
 }

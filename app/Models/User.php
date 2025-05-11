@@ -47,6 +47,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function opinions(): HasMany {
+        return $this->hasMany(Opinion::class);
+    }
+
     public function favouriteProducts(): BelongsToMany {
         return $this->belongsToMany(Product::class)->withTimestamps();
     }
