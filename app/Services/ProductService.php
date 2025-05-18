@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Contracts\AuthServiceInterface;
+use App\Contracts\OpinionRepositoryInterface;
+use App\Contracts\ProductRepositoryInterface;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Opinion;
@@ -9,6 +12,17 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class ProductService {
+
+    /*
+        * Nota: Esta inyeccion de dependecias fue agregada para poder emular lo que seria un Unit Test puro dejando a la funcionalidad de Active records
+        * de Eloquent fuera de la ecuacion. No se realizara en todos los lugares, pero queriamos al menos dejar un ejemplo de Unit Test Puro.
+    */
+    public function __construct(
+        protected ProductRepositoryInterface $productRepository,
+        protected OpinionRepositoryInterface $opinionRepository,
+        protected AuthServiceInterface $authService
+    ) {}
+
     public function createPurchase(array $data): Purchase {
         $product = Product::firstOrCreate(
             ['catalog_product_id' => $data['catalog_product_id']],
@@ -58,7 +72,7 @@ class ProductService {
     }
 
     public function createProductOpinion(array $data): Opinion {
-        $product = Product::firstOrCreate(
+        $product = $this->productRepository->firstOrCreate(
             ['catalog_product_id' => $data['catalog_product_id']],
             [
                 'name' => $data['name'],
@@ -68,9 +82,9 @@ class ProductService {
             ]
         );
 
-        return Opinion::create([
+        return $this->opinionRepository->create([
             'product_id' => $product->id,
-            'user_id' => Auth::id(),
+            'user_id' => $this->authService->id(),
             'rating' => $data['rating'],
             'content' => $data['content']
         ]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Opinion;
 use App\Services\ProductService;
@@ -10,40 +11,33 @@ use App\Http\Requests\Opinions\Store;
 use App\Http\Requests\Opinions\Update;
 
 class OpinionController extends Controller{
-    
-    public function __construct(private ProductService $service) {}
 
-    public function index(){
+    public function __construct(private readonly ProductService $service) {}
+
+    public function index(): JsonResponse {
         $opinions = Opinion::all();
         return response()->json($opinions);
     }
-    
-    public function store(Store $request){
+
+    public function store(Store $request): JsonResponse {
         $validated = $request->validated();
-        /*
-        $productId = $validated['product_id'];
-        $userId = auth()->user()->id;
-        if (Opinion::where('user_id', $userId )->where('product_id', $productId)
-        ->exists()){
-            return response()->json(['error' => 'A User can only give only one opinion per product, try to update your old one'], 422);
-        } 
-        */
+
         $opinion = $this->service->createProductOpinion($validated);
-        
-        return response()->json(new OpinionResource($opinion), 201);
+
+        return response()->json(['data' => new OpinionResource($opinion)], 201);
     }
 
-    public function show(Opinion $opinion){
+    public function show(Opinion $opinion): JsonResponse {
 
-        return response()->json(new OpinionResource($opinion), 200);
+        return response()->json(['data' => new OpinionResource($opinion)], 200);
     }
 
-    public function update(Update $request, Opinion $opinion){
-        
+    public function update(Update $request, Opinion $opinion): JsonResponse {
+
         $validated = $request->validated();
-        
+
         if ($opinion->user_id !== auth()->user()->id) {
-            return response()->json(['error' => 'Unauthorise to delete this opinion'], 403);
+            return response()->json(['error' => 'Unauthorised to delete this opinion'], 403);
         }
 
         $opinion->update([
@@ -51,17 +45,17 @@ class OpinionController extends Controller{
             'content' => $validated['content'],
         ]);
 
-        return response()->json(new OpinionResource($opinion), 200);
+        return response()->json(['data' => new OpinionResource($opinion)], 200);
     }
 
-    public function destroy(Request $request, Opinion $opinion){
+    public function destroy(Request $request, Opinion $opinion) : JsonResponse {
 
         if ($opinion->user_id !== auth()->user()->id or auth()->user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorise to delete this opinion'], 403);
         }
-        
+
         $opinion->delete();
 
-        return response()->json(['message' => 'Opinión eliminada correctamente'], 200);
+        return response()->json(['message' => 'Opinion successfully deleted'], 200);
     }
 }

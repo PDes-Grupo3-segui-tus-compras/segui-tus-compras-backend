@@ -1,11 +1,22 @@
 <?php
 
 namespace Tests\Feature;
+
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Purchase;
 
-uses(RefreshDatabase::class);
+beforeEach(function () {
+    $this->existingUserIds = User::pluck('id')->toArray();
+    $this->existingProductIds = Product::pluck('id')->toArray();
+    $this->existingPurchaseIds = Purchase::pluck('id')->toArray();
+});
+
+afterEach(function () {
+    Purchase::whereNotIn('id', $this->existingPurchaseIds)->delete();
+    Product::whereNotIn('id', $this->existingProductIds)->delete();
+    User::whereNotIn('id', $this->existingUserIds)->delete();
+});
 
 it('creates a purchase and product if not exist', function () {
     $user = actingAsUser();
@@ -65,9 +76,6 @@ it('fails if product exists but price does not match', function () {
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(['price']);
 });
-
-
-
 
 function actingAsUser(): User {
     $user = User::factory()->create();
