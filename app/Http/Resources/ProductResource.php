@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\OpinionResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -58,6 +59,9 @@ class ProductResource extends JsonResource {
             'is_favourite' => $product && $user
                 ? $user->favouriteProducts()->where('product_id', $product->id)->exists()
                 : false,
+            'opinions' => $product && $product->opinions
+            ? OpinionResource::collection($product->opinions)
+            : [],
         ];
     }
 
@@ -70,6 +74,15 @@ class ProductResource extends JsonResource {
         return $existingProduct?->price
             ?? $this['buy_box_winner']['price']
             ?? $this->generateRandomPrice();
+    }
+
+    private function convertOpinionToOpinionResource($opinions){
+
+        $opinionResources = [] ;
+        foreach($opinions as $opinion){
+            $opinionResources[] = $opinion->element();
+        }
+        return collect($opinionResources);
     }
 
     private function generateRandomPrice(): float {
