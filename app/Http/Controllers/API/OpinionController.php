@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use App\Models\Opinion;
-use App\Services\ProductService;
-use App\Http\Resources\OpinionResource;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Opinions\Store;
 use App\Http\Requests\Opinions\Update;
+use App\Http\Resources\OpinionResource;
+use App\Models\Opinion;
+use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class OpinionController extends Controller{
 
@@ -50,7 +51,7 @@ class OpinionController extends Controller{
 
     public function destroy(Request $request, Opinion $opinion) : JsonResponse {
 
-        if ($opinion->user_id !== auth()->user()->id or auth()->user()->user_type !== 'admin') {
+        if ($opinion->user_id !== auth()->user()->id && auth()->user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorise to delete this opinion'], 403);
         }
 

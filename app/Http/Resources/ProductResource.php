@@ -76,15 +76,6 @@ class ProductResource extends JsonResource {
             ?? $this->generateRandomPrice();
     }
 
-    private function convertOpinionToOpinionResource($opinions){
-
-        $opinionResources = [] ;
-        foreach($opinions as $opinion){
-            $opinionResources[] = $opinion->element();
-        }
-        return collect($opinionResources);
-    }
-
     private function generateRandomPrice(): float {
         return round(mt_rand(1000, 5000) + mt_rand(0, 99) / 100, 2);
     }

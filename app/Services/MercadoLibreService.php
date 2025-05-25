@@ -77,14 +77,26 @@ class MercadoLibreService
      * @throws ConnectionException
      * @throws Exception
      */
-    public function getProductInformation($id, $retry = true): ProductResource {
+    public function getProductInformation($id, $retry = true): ?ProductResource {
+        $cachedProducts = Cache::get('cached_products', []);
+
+        if (isset($cachedProducts[$id])) {
+            return new ProductResource($cachedProducts[$id]);
+        }
+
+
         $accessToken = Cache::get('mercadolibre_access_token', $this->accessToken);
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $accessToken,
         ])
         ->get('https://api.mercadolibre.com/products/'. $id);
 
+        if ($response->status() !== 200) {
+            return null;
+        }
+
         $responseBody = json_decode($response->getBody(), true);
+
         if ($this->hasInvalidToken($responseBody)) {
             if ($retry) {
                 $this->refreshAccessToken();
@@ -92,6 +104,9 @@ class MercadoLibreService
             }
             throw new \Exception('Could not refresh Mercado Libre token after retry.');
         }
+
+        $cachedProducts[$id] = $responseBody;
+        Cache::put('cached_products', $cachedProducts, now()->addMinutes(5));
 
         return new ProductResource($responseBody);
     }

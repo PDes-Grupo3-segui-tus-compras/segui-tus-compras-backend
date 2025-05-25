@@ -3,6 +3,11 @@
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Opinion;
+use App\Services\MercadoLibreService;
+require_once __DIR__ . '/../Helpers/mercadoLibreMocks.php';
+
+
+
 
 beforeEach(function () {
     $this->existingUserIds = User::pluck('id')->toArray();
@@ -11,6 +16,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
+    Mockery::close();
     Opinion::whereNotIn('id', $this->existingOpinionIds)->delete();
     Product::whereNotIn('id', $this->existingProductIds)->delete();
     User::whereNotIn('id', $this->existingUserIds)->delete();
@@ -68,6 +74,16 @@ it('allows posting a new opinion if none exists for product', function () {
     $user = User::factory()->create();
     $this->actingAs($user);
 
+    $this->app->instance(MercadoLibreService::class, mockMercadoLibreServiceWithProduct([
+        'catalog_product_id' => 'SKU999',
+        'name' => 'Mock Product',
+        'buy_box_winner' => ['price' => 99.99],
+        'pictures' => [],
+        'main_features' => [],
+        'attributes' => [],
+        'short_description' => ['content' => 'Mock description'],
+    ]));
+
     $payload = [
         'catalog_product_id' => 'SKU999',
         'name' => 'Test Product',
@@ -81,8 +97,6 @@ it('allows posting a new opinion if none exists for product', function () {
     $response = $this->postJson(route('opinions.store'), $payload);
 
     $response->assertCreated();
-
-    $opinion = Opinion::where('user_id', $user->id)->first();
 
     $this->assertDatabaseHas('opinions', [
         'user_id' => $user->id,

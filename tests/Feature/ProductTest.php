@@ -5,6 +5,12 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Purchase;
+use App\Services\MercadoLibreService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+
+require_once __DIR__ . '/../Helpers/mercadoLibreMocks.php';
 
 beforeEach(function () {
     $this->existingUserIds = User::pluck('id')->toArray();
@@ -20,6 +26,16 @@ afterEach(function () {
 
 it('creates a purchase and product if not exist', function () {
     $user = actingAsUser();
+
+    $this->app->instance(MercadoLibreService::class, mockMercadoLibreServiceWithProduct([
+        'catalog_product_id' => 'abc1234',
+        'name' => 'Mock Product',
+        'buy_box_winner' => ['price' => 99.99],
+        'pictures' => [],
+        'main_features' => [],
+        'attributes' => [],
+        'short_description' => ['content' => 'Mock description'],
+    ]));
 
     $response = $this->postJson('/api/purchase', purchasePayload(
         [
@@ -46,6 +62,16 @@ it('does not duplicate product if it already exists', function () {
             'price' => 200
         ]
     );
+
+    $this->app->instance(MercadoLibreService::class, mockMercadoLibreServiceWithProduct([
+        'catalog_product_id' => 'abc1234',
+        'name' => 'Mock Product',
+        'buy_box_winner' => ['price' => 99.99],
+        'pictures' => [],
+        'main_features' => [],
+        'attributes' => [],
+        'short_description' => ['content' => 'Mock description'],
+    ]));
 
     $response = $this->postJson('/api/purchase', purchasePayload([
         'catalog_product_id' => 'abc1234',
@@ -75,6 +101,86 @@ it('fails if product exists but price does not match', function () {
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(['price']);
+});
+
+//Mocked mercado libre fails tests:
+
+it('does not create purchase or product if MercadoLibreService fails', function () {
+    $user = actingAsUser();
+
+    $mockMLService = \Mockery::mock(MercadoLibreService::class);
+    $mockMLService->shouldReceive('getProductInformation')
+        ->andThrow(new ModelNotFoundException('Product was not found.'));
+
+    App::instance(MercadoLibreService::class, $mockMLService);
+
+    $payload = purchasePayload([
+        'catalog_product_id' => 'invalid123',
+        'quantity' => 1,
+        'price' => 100,
+    ]);
+
+    $response = $this->postJson('/api/purchase', $payload);
+
+    $response->assertStatus(404);
+
+    $this->assertDatabaseMissing('products', ['catalog_product_id' => 'invalid123']);
+
+    $this->assertDatabaseMissing('purchases', ['user_id' => $user->id]);
+});
+
+it('does not create product or add to favourites if MercadoLibreService fails', function () {
+    $user = actingAsUser();
+
+    $mockMLService = \Mockery::mock(MercadoLibreService::class);
+    $mockMLService->shouldReceive('getProductInformation')
+        ->andThrow(new ModelNotFoundException('Product was not found.'));
+
+    App::instance(MercadoLibreService::class, $mockMLService);
+
+    $payload = [
+        'catalog_product_id' => 'invalid123',
+        'name' => 'Invalid Product',
+        'image' => 'https://example.com/image.jpg',
+        'short_description' => 'Invalid description',
+        'price' => 999.99
+    ];
+
+    $initialCount = DB::table('product_user')->count();
+
+    $response = $this->putJson('/api/products/favourite', $payload);
+
+    $response->assertStatus(404);
+
+    $this->assertDatabaseMissing('products', ['catalog_product_id' => 'invalid123']);
+    $this->assertDatabaseCount('product_user', $initialCount);
+});
+
+it('does not create product or opinion if MercadoLibreService fails', function () {
+    $user = actingAsUser();
+
+    $mockMLService = \Mockery::mock(MercadoLibreService::class);
+    $mockMLService->shouldReceive('getProductInformation')
+        ->andThrow(new ModelNotFoundException('Product was not found.'));
+
+    App::instance(MercadoLibreService::class, $mockMLService);
+
+    $payload = [
+        'catalog_product_id' => 'invalid123',
+        'name' => 'Invalid Product',
+        'image' => 'https://example.com/image.jpg',
+        'short_description' => 'Invalid description',
+        'price' => 999.99,
+        'rating' => 4,
+        'content' => 'This is an invalid opinion'
+    ];
+
+    $response = $this->postJson('/api/opinions', $payload);
+
+    $response->assertStatus(404);
+
+    $this->assertDatabaseMissing('products', ['catalog_product_id' => 'invalid123']);
+    $this->assertDatabaseMissing('opinions', ['user_id' => $user->id]);
 });
 
 function actingAsUser(): User {

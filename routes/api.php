@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\MercadoLibreController;
+use App\Http\Controllers\API\OpinionController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\OpinionController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->middleware(AdminMiddleware::class);
     Route::post('/purchase', [ProductController::class, 'purchase']);
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
-    
+
     Route::apiResource('opinions', OpinionController::class);
 });
 
