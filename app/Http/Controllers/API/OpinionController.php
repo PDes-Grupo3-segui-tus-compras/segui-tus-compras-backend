@@ -49,7 +49,7 @@ class OpinionController extends Controller{
         return response()->json(['data' => new OpinionResource($opinion)], 200);
     }
 
-    public function destroy(Request $request, Opinion $opinion) : JsonResponse {
+    public function destroy(Opinion $opinion) : JsonResponse {
 
         if ($opinion->user_id !== auth()->user()->id && auth()->user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorise to delete this opinion'], 403);

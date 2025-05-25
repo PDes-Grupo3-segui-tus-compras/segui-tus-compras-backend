@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 require_once __DIR__ . '/../Helpers/mercadoLibreMocks.php';
+const PURCHASE_ENDPOINT = '/api/purchase';
+const PRODUCT_NOT_FOUND = 'Product was not found.';
+const EXAMPLE_IMAGE = 'https://example.com/image.jpg';
 
 beforeEach(function () {
     $this->existingUserIds = User::pluck('id')->toArray();
@@ -37,7 +40,7 @@ it('creates a purchase and product if not exist', function () {
         'short_description' => ['content' => 'Mock description'],
     ]));
 
-    $response = $this->postJson('/api/purchase', purchasePayload(
+    $response = $this->postJson(PURCHASE_ENDPOINT, purchasePayload(
         [
             'catalog_product_id' => 'abc1234',
             'quantity' => 3,
@@ -73,7 +76,7 @@ it('does not duplicate product if it already exists', function () {
         'short_description' => ['content' => 'Mock description'],
     ]));
 
-    $response = $this->postJson('/api/purchase', purchasePayload([
+    $response = $this->postJson(PURCHASE_ENDPOINT, purchasePayload([
         'catalog_product_id' => 'abc1234',
         'quantity' => 2,
         'price' => 200
@@ -95,7 +98,7 @@ it('fails if product exists but price does not match', function () {
     createExistingProduct(['price' => 100.00]);
     actingAsUser();
 
-    $response = $this->postJson('/api/purchase', purchasePayload([
+    $response = $this->postJson(PURCHASE_ENDPOINT, purchasePayload([
         'price' => 200.00,
     ]));
 
@@ -110,7 +113,7 @@ it('does not create purchase or product if MercadoLibreService fails', function 
 
     $mockMLService = \Mockery::mock(MercadoLibreService::class);
     $mockMLService->shouldReceive('getProductInformation')
-        ->andThrow(new ModelNotFoundException('Product was not found.'));
+        ->andThrow(new ModelNotFoundException(PRODUCT_NOT_FOUND));
 
     App::instance(MercadoLibreService::class, $mockMLService);
 
@@ -120,7 +123,7 @@ it('does not create purchase or product if MercadoLibreService fails', function 
         'price' => 100,
     ]);
 
-    $response = $this->postJson('/api/purchase', $payload);
+    $response = $this->postJson(PURCHASE_ENDPOINT, $payload);
 
     $response->assertStatus(404);
 
@@ -130,18 +133,18 @@ it('does not create purchase or product if MercadoLibreService fails', function 
 });
 
 it('does not create product or add to favourites if MercadoLibreService fails', function () {
-    $user = actingAsUser();
+    actingAsUser();
 
     $mockMLService = \Mockery::mock(MercadoLibreService::class);
     $mockMLService->shouldReceive('getProductInformation')
-        ->andThrow(new ModelNotFoundException('Product was not found.'));
+        ->andThrow(new ModelNotFoundException(PRODUCT_NOT_FOUND));
 
     App::instance(MercadoLibreService::class, $mockMLService);
 
     $payload = [
         'catalog_product_id' => 'invalid123',
         'name' => 'Invalid Product',
-        'image' => 'https://example.com/image.jpg',
+        'image' => EXAMPLE_IMAGE,
         'short_description' => 'Invalid description',
         'price' => 999.99
     ];
@@ -161,14 +164,14 @@ it('does not create product or opinion if MercadoLibreService fails', function (
 
     $mockMLService = \Mockery::mock(MercadoLibreService::class);
     $mockMLService->shouldReceive('getProductInformation')
-        ->andThrow(new ModelNotFoundException('Product was not found.'));
+        ->andThrow(new ModelNotFoundException(PRODUCT_NOT_FOUND));
 
     App::instance(MercadoLibreService::class, $mockMLService);
 
     $payload = [
         'catalog_product_id' => 'invalid123',
         'name' => 'Invalid Product',
-        'image' => 'https://example.com/image.jpg',
+        'image' => EXAMPLE_IMAGE,
         'short_description' => 'Invalid description',
         'price' => 999.99,
         'rating' => 4,
@@ -193,7 +196,7 @@ function purchasePayload(array $overrides = []): array {
     return array_merge([
         'catalog_product_id' => 'abc123',
         'name' => 'Test Product',
-        'image' => 'https://example.com/image.jpg',
+        'image' => EXAMPLE_IMAGE,
         'short_description' => 'Short desc',
         'quantity' => 2,
         'price' => 150
