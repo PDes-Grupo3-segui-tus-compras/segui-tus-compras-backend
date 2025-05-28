@@ -16,8 +16,7 @@ class MercadoLibreController extends Controller
         $this->mercadoLibreService = $mercadoLibreService;
     }
 
-    public function searchProducts(Request $request)
-    {   
+    public function searchProducts(Request $request) {
         $validator = Validator::make($request->all(), [
             'q' => 'required|string|max:255',
         ]);
@@ -30,12 +29,25 @@ class MercadoLibreController extends Controller
             $query = $request->input('q', 'Samsung');
             $products = $this->mercadoLibreService->searchProducts($query);
             return response()->json($products);
-        } catch (RequestException $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Unable to fetch product details from Mercado Libre.',
                 'message' => $e->getMessage(),
             ], 421);
-        };
-        
+        }
+    }
+
+    public function getProductInformation(Request $request){
+
+        try{
+            $product_id = $request->input('product_id');
+            $product = $this->mercadoLibreService->getProductInformation($product_id);
+            return response()->json($product);
+        }catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Unable to fetch product details from Mercado Libre.',
+                'message' => $e->getMessage(),
+            ], 421);
+        }
     }
 }
