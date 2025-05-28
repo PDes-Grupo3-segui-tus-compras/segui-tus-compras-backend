@@ -134,6 +134,25 @@ it('rejects a second opinion for the same product by the same user', function ()
 
 // UPDATE
 
+it('fails to update opinion with missing fields', function () {
+    $user = User::factory()->create();
+
+    $opinion = Opinion::factory()->for($user)->create([
+        'rating' => 3,
+        'content' => 'Old content',
+    ]);
+
+    $this->actingAs($user);
+
+    $response = $this->putJson(route('opinions.update', $opinion), []);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors([
+            'rating',
+            'content',
+        ]);
+});
+
 it('updates an opinion if owned by the authenticated user', function () {
     $user = User::factory()->create();
 
