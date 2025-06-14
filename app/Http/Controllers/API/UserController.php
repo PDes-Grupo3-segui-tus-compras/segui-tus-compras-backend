@@ -149,7 +149,6 @@ class UserController extends Controller {
      * )
      */
     public function purchases(Request $request, User $user): JsonResponse {
-        
         if ($user->id !== auth()->user()->id && auth()->user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorise to access this user data'], 403);
         }

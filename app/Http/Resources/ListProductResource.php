@@ -12,14 +12,13 @@ class ListProductResource extends JsonResource{
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array{
-        $product = $this instanceof \App\Models\Product ? $this : $this->product;
         return [
-            'id' => $product->id,
-            'catalog_product_id' => $product->catalog_product_id,
-            'name' => $product->name,
-            'image' => $product->image,
-            'short_description' => $product->short_description,
-            'price' => $product->price,
+            'id' => $this->id,
+            'catalog_product_id' => $this->catalog_product_id,
+            'name' => $this->name,
+            'image' => $this->image,
+            'short_description' => $this->short_description,
+            'price' => $this->price,
         ];
     }
 }

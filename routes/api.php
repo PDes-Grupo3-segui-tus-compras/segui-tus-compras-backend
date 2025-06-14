@@ -17,9 +17,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/search-products', [MercadoLibreController::class, 'searchProducts']);
     Route::get('/products/get-product', [MercadoLibreController::class, 'getProductInformation']);
+    Route::get('/users/{user}/favourites', [UserController::class, 'favourites']);
+    Route::get('/users/{user}/purchases', [UserController::class, 'purchases']);
     Route::get('/users', [UserController::class, 'index'])->middleware(AdminMiddleware::class);
-    Route::get('/users/{user}/favourites', [UserController::class, 'favourites'])->middleware(AdminMiddleware::class);
-    Route::get('/users/{user}/purchases', [UserController::class, 'purchases'])->middleware(AdminMiddleware::class);
     Route::post('/purchase', [ProductController::class, 'purchase']);
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
 
