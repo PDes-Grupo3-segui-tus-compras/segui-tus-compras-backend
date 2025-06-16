@@ -341,6 +341,139 @@
                 ]
             }
         },
+        "/api/metrics": {
+            "get": {
+                "tags": [
+                    "Metrics"
+                ],
+                "summary": "Get general metrics",
+                "description": "Returns the top 5 users with the most purchases, the top 5 most purchased products, and the top 5 most favorited products. Accessible only by administrator users.",
+                "operationId": "85f4a1314a1316f1c56901816c70bdee",
+                "responses": {
+                    "200": {
+                        "description": "Metrics obtained correctly",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "top_five_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Juan Pérez"
+                                                    },
+                                                    "total_purchases": {
+                                                        "type": "integer",
+                                                        "example": 8
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "top_five_purchased": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "catalog_product_id": {
+                                                        "type": "string",
+                                                        "example": "MLA123456"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Smart TV 55 pulgadas"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/image.jpg"
+                                                    },
+                                                    "total_purchased_quantity": {
+                                                        "type": "integer",
+                                                        "example": 15
+                                                    },
+                                                    "times_purchased": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "top_five_favourites": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "catalog_product_id": {
+                                                        "type": "string",
+                                                        "example": "MLA654321"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Auriculares inalámbricos"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/image.jpg"
+                                                    },
+                                                    "total_favourites": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No autorizado para acceder a este recurso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthorise to access this user data"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/opinions": {
             "post": {
                 "tags": [
@@ -1122,6 +1255,193 @@
                     }
                 ]
             }
+        },
+        "/api/users/{id}/favourites": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "List of Favourite products of user",
+                "description": "List of Favourite products of user",
+                "operationId": "eb71745fa2df7dfabe1f61dbbeaf0cd1",
+                "responses": {
+                    "200": {
+                        "description": "List of Favourite products of user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "catalog_product_id": {
+                                                "type": "string",
+                                                "example": "MLA29815169"
+                                            },
+                                            "id": {
+                                                "type": "string",
+                                                "example": "12"
+                                            },
+                                            "price": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": "5000,50"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "PlayStation 5"
+                                            },
+                                            "image": {
+                                                "type": "string",
+                                                "example": "https://example.com/image.jpg"
+                                            },
+                                            "short_description": {
+                                                "type": "string",
+                                                "example": "Consola de videojuegos de última generación"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized to access this user data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "nauthorise to access this user data"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{id}/purchases": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "List of Purchased products of user",
+                "description": "List of Purchased products of user",
+                "operationId": "3cb0a46bf4af94e8bccdcd0811e96df7",
+                "responses": {
+                    "200": {
+                        "description": "List of Purchased products of user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "catalog_product_id": {
+                                                "type": "string",
+                                                "example": "MLA29815169"
+                                            },
+                                            "id": {
+                                                "type": "string",
+                                                "example": "12"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "PlayStation 5"
+                                            },
+                                            "image": {
+                                                "type": "string",
+                                                "example": "https://example.com/image.jpg"
+                                            },
+                                            "short_description": {
+                                                "type": "string",
+                                                "example": "Consola de videojuegos de última generación"
+                                            },
+                                            "quantity": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "price": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 599.99
+                                            },
+                                            "purchase_date": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "2025-05-05"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized to access this user data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "nauthorise to access this user data"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1137,6 +1457,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Metrics",
+            "description": "Metrics"
         },
         {
             "name": "Opinions",

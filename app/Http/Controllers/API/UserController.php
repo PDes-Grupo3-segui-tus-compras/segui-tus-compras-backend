@@ -9,13 +9,13 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\ListPurchaseResource;
 use App\Http\Resources\ListProductResource;
 
-/*  * 
-    * 
+/*  *
+    *
     * title="Users",
     * description="Endpoints involving listing users"
     */
 class UserController extends Controller {
-    
+
     /**
      * @OA\Get(
      *     path="/api/users",
@@ -99,12 +99,12 @@ class UserController extends Controller {
      * )
      */
     public function favourites(Request $request, User $user): JsonResponse {
-        
+
         if ($user->id !== auth()->user()->id && auth()->user()->user_type !== 'admin') {
             return response()->json(['error' => 'Unauthorise to access this user data'], 403);
         }
         $favourites = $user->favouriteProducts;
-        
+
         return response()->json(ListProductResource::collection($favourites));
     }
 
@@ -125,10 +125,10 @@ class UserController extends Controller {
      *                 @OA\Property(property="id", type="string", example="12"),
      *                 @OA\Property(property="name", type="string", example="PlayStation 5"),
      *                 @OA\Property(property="image", type="string", example="https://example.com/image.jpg"),
-     *                 @OA\Property(property="short_description", type="string", example="Consola de videojuegos de última generación")
+     *                 @OA\Property(property="short_description", type="string", example="Consola de videojuegos de última generación"),
      *                 @OA\Property(property="quantity", type="integer", example=1),
-     *                 @OA\Property(property="price", type="number", format="float", example=599.99)
-     *                 @OA\Property(property="purchase_date", type="date", format="date", example=5/5/2025)
+     *                 @OA\Property(property="price", type="number", format="float", example=599.99),
+     *                 @OA\Property(property="purchase_date", type="string", format="date", example="2025-05-05")
      *             )
      *         )
      *     ),
@@ -154,7 +154,7 @@ class UserController extends Controller {
         }
 
         $purchases = $user->purchases()->with('product')->get();
-        
+
         return response()->json(ListPurchaseResource::collection($purchases));
     }
 }
