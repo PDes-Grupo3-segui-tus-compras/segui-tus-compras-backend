@@ -26,7 +26,7 @@ class Purchase extends Model {
         return $query->select('product_id', DB::raw('SUM(quantity) as total_quantity'), DB::raw('COUNT(*) as times_purchased'))
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')
-            ->with('product:id,name,catalog_product_id')
+            ->with('product:id,name,catalog_product_id,image')
             ->take($limit);
     }
 }
