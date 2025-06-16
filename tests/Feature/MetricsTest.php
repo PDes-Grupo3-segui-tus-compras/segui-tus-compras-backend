@@ -51,19 +51,19 @@ it('allows admin to access metrics endpoint and returns expected structure', fun
 
     $response->assertOk()
         ->assertJsonStructure([
-            'top_five_users' => [['id', 'name', 'total_purchases']],
+            'top_five_users' => [['id', 'name', 'total']],
             'top_five_purchased' => [[
                 'catalog_product_id',
                 'name',
                 'image',
-                'total_purchased_quantity',
+                'total',
                 'times_purchased'
             ]],
             'top_five_favourites' => [[
                 'catalog_product_id',
                 'name',
                 'image',
-                'total_favourites'
+                'total'
             ]],
         ]);
 });

@@ -368,7 +368,7 @@
                                                         "type": "string",
                                                         "example": "Juan Pérez"
                                                     },
-                                                    "total_purchases": {
+                                                    "total": {
                                                         "type": "integer",
                                                         "example": 8
                                                     }
@@ -392,7 +392,7 @@
                                                         "type": "string",
                                                         "example": "https://example.com/image.jpg"
                                                     },
-                                                    "total_purchased_quantity": {
+                                                    "total": {
                                                         "type": "integer",
                                                         "example": 15
                                                     },
@@ -420,7 +420,7 @@
                                                         "type": "string",
                                                         "example": "https://example.com/image.jpg"
                                                     },
-                                                    "total_favourites": {
+                                                    "total": {
                                                         "type": "integer",
                                                         "example": 10
                                                     }

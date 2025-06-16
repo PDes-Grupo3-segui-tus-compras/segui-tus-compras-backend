@@ -34,7 +34,7 @@ class MetricsController extends Controller {
      *                 @OA\Items(
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="name", type="string", example="Juan Pérez"),
-     *                     @OA\Property(property="total_purchases", type="integer", example=8)
+     *                     @OA\Property(property="total", type="integer", example=8)
      *                 )
      *             ),
      *             @OA\Property(
@@ -44,7 +44,7 @@ class MetricsController extends Controller {
      *                     @OA\Property(property="catalog_product_id", type="string", example="MLA123456"),
      *                     @OA\Property(property="name", type="string", example="Smart TV 55 pulgadas"),
      *                     @OA\Property(property="image", type="string", example="https://example.com/image.jpg"),
-     *                     @OA\Property(property="total_purchased_quantity", type="integer", example=15),
+     *                     @OA\Property(property="total", type="integer", example=15),
      *                     @OA\Property(property="times_purchased", type="integer", example=5)
      *                 )
      *             ),
@@ -55,7 +55,7 @@ class MetricsController extends Controller {
      *                     @OA\Property(property="catalog_product_id", type="string", example="MLA654321"),
      *                     @OA\Property(property="name", type="string", example="Auriculares inalámbricos"),
      *                     @OA\Property(property="image", type="string", example="https://example.com/image.jpg"),
-     *                     @OA\Property(property="total_favourites", type="integer", example=10)
+     *                     @OA\Property(property="total", type="integer", example=10)
      *                 )
      *             )
      *         )
@@ -82,7 +82,7 @@ class MetricsController extends Controller {
             ->map(fn($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'total_purchases' => $user->purchases_count,
+                'total' => $user->purchases_count,
             ]);
 
         $topFivePurchased = Purchase::topPurchasedProducts()
@@ -91,7 +91,7 @@ class MetricsController extends Controller {
                 'catalog_product_id' => $purchase->product->catalog_product_id,
                 'name' => $purchase->product->name,
                 'image' => $purchase->product->image,
-                'total_purchased_quantity' => $purchase->total_quantity,
+                'total' => $purchase->total_quantity,
                 'times_purchased' => $purchase->times_purchased,
             ]);
 
@@ -101,7 +101,7 @@ class MetricsController extends Controller {
                 'catalog_product_id' => $product->catalog_product_id,
                 'name' => $product->name,
                 'image' => $product->image,
-                'total_favourites' => $product->users_count,
+                'total' => $product->favourited_by_count
             ]);
 
         return response()->json([
