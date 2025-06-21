@@ -59,4 +59,10 @@ class User extends Authenticatable
     public function favouriteProducts(): BelongsToMany {
         return $this->belongsToMany(Product::class)->withTimestamps();
     }
+
+    public function scopeTopBuyers($query, $limit = 5) {
+        return $query->withCount('purchases')
+            ->orderByDesc('purchases_count')
+            ->take($limit);
+    }
 }
