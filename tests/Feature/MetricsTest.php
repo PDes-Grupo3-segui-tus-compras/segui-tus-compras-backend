@@ -5,6 +5,9 @@ use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\DB;
 
+
+const METRICS_URL = '/api/metrics';
+
 beforeEach(function () {
     $this->existingUserIds = User::pluck('id')->toArray();
     $this->existingProductIds = Product::pluck('id')->toArray();
@@ -47,7 +50,7 @@ afterEach(function () {
 it('allows admin to access metrics endpoint and returns expected structure', function () {
     $this->actingAs($this->admin);
 
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $response->assertOk()
         ->assertJsonStructure([
@@ -71,7 +74,7 @@ it('allows admin to access metrics endpoint and returns expected structure', fun
 it('returns the correct top buyer in the metrics', function () {
     $this->actingAs($this->admin);
 
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $topUser = User::withCount('purchases')
         ->orderByDesc('purchases_count')
@@ -83,7 +86,7 @@ it('returns the correct top buyer in the metrics', function () {
 it('returns the correct top purchased product in the metrics', function () {
     $this->actingAs($this->admin);
 
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $topPurchase = Purchase::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
         ->groupBy('product_id')
@@ -98,7 +101,7 @@ it('returns the correct top purchased product in the metrics', function () {
 it('returns the correct top liked product in the metrics', function () {
     $this->actingAs($this->admin);
 
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $topLiked = Product::withCount('favouritedBy')
         ->orderByDesc('favourited_by_count')
@@ -110,13 +113,13 @@ it('returns the correct top liked product in the metrics', function () {
 it('does not allow non-admin user to access metrics', function () {
     $this->actingAs($this->user1);
 
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $response->assertStatus(403);
 });
 
 it('does not allow unauthenticated access to metrics', function () {
-    $response = $this->getJson('/api/metrics');
+    $response = $this->getJson(METRICS_URL);
 
     $response->assertStatus(401);
 });
