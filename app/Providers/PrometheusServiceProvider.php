@@ -10,7 +10,7 @@ class PrometheusServiceProvider extends ServiceProvider {
     public function register() {
         $this->app->singleton(CollectorRegistry::class, function () {
             $redisAdapter = new Redis([
-                'host' => 'redis',
+                'host' => env('PROMETHEUS_REDIS_HOST', 'redis'),
                 'port' => 6379,
                 'timeout' => 0.1,
                 'read_timeout' => 10,
