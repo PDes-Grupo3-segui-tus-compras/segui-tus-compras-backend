@@ -67,5 +67,14 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --force
 
+      - name: Wait for Redis to be ready
+        run: |
+          for i in {1..10}; do
+            if redis-cli -h redis ping | grep PONG; then
+              break
+            fi
+            sleep 1
+          done
+
       - name: Run Pest tests
         run: ./vendor/bin/pest --colors=always
