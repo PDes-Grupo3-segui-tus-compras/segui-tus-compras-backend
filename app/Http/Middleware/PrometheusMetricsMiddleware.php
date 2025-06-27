@@ -21,6 +21,9 @@ class PrometheusMetricsMiddleware
     public function handle($request, Closure $next)
     {
         $response = $next($request);
+        if (!str_starts_with($request->path(), 'api/')) {
+            return $response;
+        }
 
         $counter = $this->registry->getOrRegisterCounter(
             'http',
