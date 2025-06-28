@@ -255,6 +255,26 @@
                                                 "email": {
                                                     "type": "string",
                                                     "example": "john@example.com"
+                                                },
+                                                "user_type": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2024-01-01 12:34:56"
+                                                },
+                                                "purchases_count": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "favourites_count": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "opinions_count": {
+                                                    "type": "integer",
+                                                    "example": 3
                                                 }
                                             },
                                             "type": "object"
@@ -332,6 +352,77 @@
                                 }
                             }
                         }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/change-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Change password for authenticated user",
+                "operationId": "22333fadd20145176e61fc379adc1d7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "example": "oldpass123"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [

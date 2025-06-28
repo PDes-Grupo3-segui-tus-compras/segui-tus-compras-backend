@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/purchase', [ProductController::class, 'purchase']);
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
     Route::get('/metrics', [MetricsController::class, 'getMetrics'])->middleware(AdminMiddleware::class);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::apiResource('opinions', OpinionController::class);
 });
