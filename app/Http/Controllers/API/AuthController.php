@@ -142,13 +142,20 @@ class AuthController extends Controller {
 
     /**
      * @OA\Get(
-     *     path="/api/profile",
-     *     summary="Get authenticated user's profile",
+     *     path="/api/profile/{user}",
+     *     summary="Get profile of a specific user",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the user",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Authenticated user data",
+     *         description="User profile data",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="user", type="object",
@@ -172,9 +179,8 @@ class AuthController extends Controller {
      *     )
      * )
      */
-    public function profile(Request $request)
-    {
-        $user = $request->user()->loadCount([
+    public function profile(User $user) {
+        $user->loadCount([
             'purchases',
             'favouriteProducts',
             'opinions',
@@ -186,7 +192,7 @@ class AuthController extends Controller {
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'user_type' => $user->user_type, // debe estar en tu tabla de usuarios
+                'user_type' => $user->user_type,
                 'created_at' => $user->created_at->toDateTimeString(),
                 'purchases_count' => $user->purchases_count,
                 'favourites_count' => $user->favourite_products_count,

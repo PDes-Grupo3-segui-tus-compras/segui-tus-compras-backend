@@ -14,7 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::get('/profile/{user}', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/search-products', [MercadoLibreController::class, 'searchProducts']);
     Route::get('/products/get-product', [MercadoLibreController::class, 'getProductInformation']);

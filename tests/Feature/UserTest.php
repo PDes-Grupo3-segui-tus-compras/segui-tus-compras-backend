@@ -103,18 +103,18 @@ it('returns 401 if unauthenticated', function () {
     $response->assertStatus(401);
 });
 
-it('allows authenticated user to get their profile', function () {
+it('allows any authenticated user to view any user profile', function () {
     $this->actingAs($this->user);
 
-    $response = $this->getJson('/api/profile');
+    $response = $this->getJson("/api/profile/{$this->admin->id}");
 
     $response->assertOk()
         ->assertJson([
             'success' => true,
             'user' => [
-                'id' => $this->user->id,
-                'email' => $this->user->email,
-                'user_type' => 'user',
+                'id' => $this->admin->id,
+                'email' => $this->admin->email,
+                'user_type' => 'admin',
             ],
         ])
         ->assertJsonStructure([
@@ -132,9 +132,8 @@ it('allows authenticated user to get their profile', function () {
         ]);
 });
 
-it('does not allow unauthenticated user to access profile', function () {
-    $response = $this->getJson('/api/profile');
-
+it('returns 401 if unauthenticated when accessing profile', function () {
+    $response = $this->getJson("/api/profile/{$this->user->id}");
     $response->assertStatus(401);
 });
 
