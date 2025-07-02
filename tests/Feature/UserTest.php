@@ -2,6 +2,7 @@
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Purchase;
+use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
     $this->existingUserIds = User::pluck('id')->toArray();
@@ -99,5 +100,101 @@ it('returns 401 if unauthenticated', function () {
     $response->assertStatus(401);
 
     $response = $this->getJson("/api/users/{$this->user->id}/purchases");
+    $response->assertStatus(401);
+});
+
+it('allows any authenticated user to view any user profile', function () {
+    $this->actingAs($this->user);
+
+    $response = $this->getJson("/api/profile/{$this->admin->id}");
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'user' => [
+                'id' => $this->admin->id,
+                'email' => $this->admin->email,
+                'user_type' => 'admin',
+            ],
+        ])
+        ->assertJsonStructure([
+            'success',
+            'user' => [
+                'id',
+                'name',
+                'email',
+                'user_type',
+                'created_at',
+                'purchases_count',
+                'favourites_count',
+                'opinions_count',
+            ],
+        ]);
+});
+
+it('returns 401 if unauthenticated when accessing profile', function () {
+    $response = $this->getJson("/api/profile/{$this->user->id}");
+    $response->assertStatus(401);
+});
+
+it('allows authenticated user to change password', function () {
+    $this->actingAs($this->user);
+
+    $payload = [
+        'current_password' => 'password',
+        'new_password' => 'new_secure_pass123',
+        'new_password_confirmation' => 'new_secure_pass123',
+    ];
+
+    $response = $this->postJson('/api/change-password', $payload);
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'message' => 'Password updated successfully.',
+        ]);
+    $this->user->refresh();
+    expect(Hash::check('new_secure_pass123', $this->user->password))->toBeTrue();
+});
+
+it('fails to change password if current password is incorrect', function () {
+    $this->actingAs($this->user);
+
+    $payload = [
+        'current_password' => 'wrong_password',
+        'new_password' => 'new_secure_pass123',
+        'new_password_confirmation' => 'new_secure_pass123',
+    ];
+
+    $response = $this->postJson('/api/change-password', $payload);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('current_password');
+});
+
+it('fails to change password if new password confirmation does not match', function () {
+    $this->actingAs($this->user);
+
+    $payload = [
+        'current_password' => 'password',
+        'new_password' => 'new_secure_pass123',
+        'new_password_confirmation' => 'wrong_confirmation',
+    ];
+
+    $response = $this->postJson('/api/change-password', $payload);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('new_password');
+});
+
+it('returns 401 if unauthenticated when changing password', function () {
+    $payload = [
+        'current_password' => 'password',
+        'new_password' => 'new_secure_pass123',
+        'new_password_confirmation' => 'new_secure_pass123',
+    ];
+
+    $response = $this->postJson('/api/change-password', $payload);
+
     $response->assertStatus(401);
 });

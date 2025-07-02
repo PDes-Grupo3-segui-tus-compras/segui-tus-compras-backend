@@ -14,7 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::get('/profile/{user}', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/search-products', [MercadoLibreController::class, 'searchProducts']);
     Route::get('/products/get-product', [MercadoLibreController::class, 'getProductInformation']);
@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/purchase', [ProductController::class, 'purchase']);
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
     Route::get('/metrics', [MetricsController::class, 'getMetrics'])->middleware(AdminMiddleware::class);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::apiResource('opinions', OpinionController::class);
 });

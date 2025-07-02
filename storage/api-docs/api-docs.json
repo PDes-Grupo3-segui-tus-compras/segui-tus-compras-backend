@@ -224,16 +224,27 @@
                 }
             }
         },
-        "/api/profile": {
+        "/api/profile/{user}": {
             "get": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Get authenticated user's profile",
-                "operationId": "7e3b0ab44699899907dc284c846a4db1",
+                "summary": "Get profile of a specific user",
+                "operationId": "9911a707c99801a006be7991a175c493",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Authenticated user data",
+                        "description": "User profile data",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -255,6 +266,26 @@
                                                 "email": {
                                                     "type": "string",
                                                     "example": "john@example.com"
+                                                },
+                                                "user_type": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2024-01-01 12:34:56"
+                                                },
+                                                "purchases_count": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "favourites_count": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "opinions_count": {
+                                                    "type": "integer",
+                                                    "example": 3
                                                 }
                                             },
                                             "type": "object"
@@ -326,6 +357,295 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/change-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Change password for authenticated user",
+                "operationId": "22333fadd20145176e61fc379adc1d7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "type": "string",
+                                        "example": "oldpass123"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    },
+                                    "new_password_confirmation": {
+                                        "type": "string",
+                                        "example": "newpass456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/search-products": {
+            "get": {
+                "tags": [
+                    "Mercado Libre"
+                ],
+                "summary": "Buscar productos en Mercado Libre",
+                "description": "Busca productos activos en Mercado Libre por texto de búsqueda",
+                "operationId": "5cba548618cda0f11f92502e7d2f581b",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Texto a buscar (por ejemplo: 'Samsung')",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Samsung"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de productos encontrados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "string",
+                                                "example": "MLA12345678"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Samsung Galaxy S21"
+                                            },
+                                            "image": {
+                                                "type": "string",
+                                                "example": "https://http2.mlstatic.com/D_NQ_NP_2X_123-MLA123456789_0123-F.jpg"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validación fallida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "q": [
+                                                    "El campo q es obligatorio."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "421": {
+                        "description": "Error al obtener los productos desde Mercado Libre",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unable to fetch product details from Mercado Libre."
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access token expired"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/get-product": {
+            "get": {
+                "tags": [
+                    "Mercado Libre"
+                ],
+                "summary": "Obtener información de un producto de Mercado Libre",
+                "description": "Devuelve información detallada de un producto en Mercado Libre por su ID",
+                "operationId": "45237e720cc7107d8bc24cb2d937c2d7",
+                "parameters": [
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "description": "ID del producto en Mercado Libre",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "MLA12345678"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Información detallada del producto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "example": "MLA12345678"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Samsung Galaxy S21"
+                                        },
+                                        "price": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 59999.99
+                                        },
+                                        "available_quantity": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "sold_quantity": {
+                                            "type": "integer",
+                                            "example": 250
+                                        },
+                                        "thumbnail": {
+                                            "type": "string",
+                                            "example": "https://example.com/img.jpg"
+                                        },
+                                        "short_description": {
+                                            "type": "string",
+                                            "example": "Un smartphone potente y moderno"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "421": {
+                        "description": "Error al obtener el producto desde Mercado Libre",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Unable to fetch product details from Mercado Libre."
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Access token expired"
                                         }
                                     },
                                     "type": "object"
@@ -1457,6 +1777,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Mercado Libre",
+            "description": "Mercado Libre"
         },
         {
             "name": "Metrics",
