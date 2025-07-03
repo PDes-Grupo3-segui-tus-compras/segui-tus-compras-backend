@@ -52,7 +52,17 @@ class User extends Authenticatable
         return $this->hasMany(Opinion::class);
     }
 
+    public function purchases(): HasMany {
+        return $this->hasMany(Purchase::class);
+    }
+
     public function favouriteProducts(): BelongsToMany {
         return $this->belongsToMany(Product::class)->withTimestamps();
+    }
+
+    public function scopeTopBuyers($query, $limit = 5) {
+        return $query->withCount('purchases')
+            ->orderByDesc('purchases_count')
+            ->take($limit);
     }
 }

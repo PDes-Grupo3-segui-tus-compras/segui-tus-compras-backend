@@ -26,4 +26,10 @@ class Product extends Model {
     public function favouritedBy(): BelongsToMany {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
+
+    public function scopeTopFavourites($query, $limit = 5) {
+        return $query->withCount('favouritedBy')
+            ->orderByDesc('favourited_by_count')
+            ->take($limit);
+    }
 }
