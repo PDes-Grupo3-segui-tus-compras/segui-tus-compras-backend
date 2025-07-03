@@ -166,7 +166,7 @@ networks:
 
 ```
 
-- Clonar el backend del proyecto en la carpeta que este el docker compose.
+- Clonar el backend del proyecto en la carpeta que este el docker compose `git clone https://github.com/PDes-Grupo3-segui-tus-compras/segui-tus-compras-backend.git`.
 - Agregar un archivo que se llame prometheus.yml a la misma altura que el docker compose con estas caracteristicas:
 
 ```
@@ -183,6 +183,18 @@ scrape_configs:
       - targets: ['node_exporter:9100']
 ```
 
+- La carpeta donde debemos pararnos en la consola deberia tener esta estructura:
+
+```
+carpeta
+│   docker-compose.yml
+│   prometheus.yml   
+└───segui-tus-compras-backend
+    │   ---
+    │   ---(Todo el proyecto)
+    │   ---
+```
+
   
 - Vincular docker con el usuario de github: `docker login ghcr.io -u {usuario de github sin mayusculas} -p {un token con todos los permisos}`
 - Pullear la imagen de docker `docker pull ghcr.io/trejojulian/segui-tus-compras-frontend:1.5` (Pedir permisos para pullear la misma)
@@ -193,16 +205,27 @@ Puede darse el caso donde ya tengamos el puerto de la base de datos expuesto, en
 
 ## Como ver el proyecto funcionando:
 
-Ingresar al container de laravel_app y correr el seeder `php artisan db:seed --class=UsersSeeder` para ingresar al usuario mail: admin@admin.com, password: admin y al usuario email: user@user.com, password: user al sistema.
+Ingresar al container de laravel_app (`docker exec -it laravel_app bash`) y correr el seeder `php artisan db:seed --class=UsersSeeder`. 
+
+Para ingresar al usuario admin tenemos las siguientes credenciales: 
+
+- mail: admin@admin.com
+- password: admin 
+
+Para ingresar al usuario generico tenemos las siguientes credenciales:
+ 
+- user@user.com 
+- password: user
 
 Una vez levantados los contenedores ir http://localhost:5173/ para ingresar al frontend del proyecto.
 
 ## Tests:
 
 Para correr los tests se debe:
-- Ingresar al container de laravel_app.
+- Ingresar al container de laravel_app (`docker exec -it laravel_app bash`).
+- Ejecutar el comando `composer install`
 - Correr los siguientes comandos `php artisan config:clear` `php artisan cache:clear` `php artisan config:cache`
-- Correr el comando `./vendor/bin/pest`. Si este comando falla, quizas haya que ejecutar el comando `composer install` debido a una posible falla en la instalacion de las depedencias o por tener un proyecto con una version vieja previamente.
+- Correr el comando `./vendor/bin/pest`.
 
 ## Documentacion
 
@@ -241,3 +264,6 @@ El proyecto cuenta con Prometheus y Grafana integrados, para acceder a los mismo
 
 Tenemos un middleware que recolecta informacion sobre las llamadas a los endpoints de la aplicacion, dicha estadistica se puede consultar haciendole una query a la data recuperada de prometheus con el nombre `http_requests_total`. Tambien tenemos una metrica que esta siendo recabada a traves del servicio node_exporter `node_cpu_seconds_total` que nos indica la cantidad de CPU que esta siendo consumida.
 
+## Crear usuario admin
+
+Se debe correr el comando: `php artisan make:admin [EMAIL] [PASSWORD]`
