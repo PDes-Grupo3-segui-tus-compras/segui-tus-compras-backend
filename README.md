@@ -19,6 +19,10 @@
 - Tener docker instalado en la PC.
 - Tener un archivo docker-compose.yml en una carpeta donde tengamos la consola abierta con lo siguiente:
 
+<details>
+
+<summary>Docker Compose</summary>
+
 ```
 version: '3.8'
 
@@ -41,8 +45,8 @@ services:
       - app_network
 
   app:
-    image: ghcr.io/trejojulian/segui-tus-compras-backend:1.6
-    container_name: laravel_app
+    image: ghcr.io/trejojulian/segui-tus-compras-backend:latest
+    container_name: laravel_app_grupo3
     restart: unless-stopped
     working_dir: /var/www
     depends_on:
@@ -61,7 +65,7 @@ services:
 
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx_app
+    container_name: nginx_app_grupo3
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -74,8 +78,8 @@ services:
       - app_network
 
   frontend:
-    image: ghcr.io/trejojulian/segui-tus-compras-frontend:1.5
-    container_name: vue_app
+    image: ghcr.io/trejojulian/segui-tus-compras-frontend:latest
+    container_name: vue_app_grupo3
     restart: unless-stopped
     ports:
       - "5173:5173"
@@ -91,7 +95,7 @@ services:
 
   db:
     image: mysql:8
-    container_name: mysql_db
+    container_name: mysql_db_grupo3
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -105,7 +109,7 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis_prometheus
+    container_name: redis_prometheus_grupo3
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -114,7 +118,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
+    container_name: prometheus_grupo3
     restart: unless-stopped
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -134,7 +138,7 @@ services:
 
   grafana:
     image: grafana/grafana-oss:latest
-    container_name: grafana
+    container_name: grafana_grupo3
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -148,7 +152,7 @@ services:
 
   node_exporter:
     image: prom/node-exporter:latest
-    container_name: node_exporter
+    container_name: node_exporter_grupo3
     restart: unless-stopped
     ports:
       - "9100:9100"
@@ -166,6 +170,8 @@ networks:
 
 ```
 
+</details>
+
 - Clonar el backend del proyecto en la carpeta que este el docker compose `git clone https://github.com/PDes-Grupo3-segui-tus-compras/segui-tus-compras-backend.git`.
 - Agregar un archivo que se llame prometheus.yml a la misma altura que el docker compose con estas caracteristicas:
 
@@ -176,7 +182,7 @@ scrape_configs:
   - job_name: 'laravel'
     static_configs:
       - targets:
-          - nginx_app:80
+          - nginx_app_grupo3:80
 
   - job_name: 'node'
     static_configs:
@@ -205,7 +211,7 @@ Puede darse el caso donde ya tengamos el puerto de la base de datos expuesto, en
 
 ## Como ver el proyecto funcionando:
 
-Ingresar al container de laravel_app (`docker exec -it laravel_app bash`) y correr el seeder `php artisan db:seed --class=UsersSeeder`. 
+Ingresar al container de laravel_app (`docker exec -it laravel_app bash`) y correr el seeder `php artisan db:seed --class=UsersSeeder`. Si este comando falla por desconocer la Base de datos, correr el comando `php artisan migrate` y reintentar
 
 Para ingresar al usuario admin tenemos las siguientes credenciales: 
 
