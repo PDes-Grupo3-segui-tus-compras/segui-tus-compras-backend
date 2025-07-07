@@ -1,0 +1,31 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  publish_image:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Set up .env file
+      run: |
+        cp .env.example .env
+        sed -i "s|^APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env
+        sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|" .env
+        sed -i "s|^MERCADOLIBRE_CLIENT_ID=.*|MERCADOLIBRE_CLIENT_ID=${{ secrets.MERCADOLIBRE_CLIENT_ID }}|" .env
+        sed -i "s|^MERCADOLIBRE_CLIENT_SECRET=.*|MERCADOLIBRE_CLIENT_SECRET=${{ secrets.MERCADOLIBRE_CLIENT_SECRET }}|" .env
+        sed -i "s|^MERCADOLIBRE_ACCESS_TOKEN=.*|MERCADOLIBRE_ACCESS_TOKEN=${{ secrets.MERCADOLIBRE_ACCESS_TOKEN }}|" .env
+        sed -i "s|^MERCADOLIBRE_REFRESH_TOKEN=.*|MERCADOLIBRE_REFRESH_TOKEN=${{ secrets.MERCADOLIBRE_REFRESH_TOKEN }}|" .env
+    - name: Build the Docker image
+      run: docker build . --tag ghcr.io/trejojulian/segui-tus-compras-backend:latest
+    - name: push image to githubregistry
+      run: |
+        echo "${{ secrets.SEGUI_TUS_COMPRAS_TOKEN }}" | docker login ghcr.io -u TrejoJulian --password-stdin
+        docker push ghcr.io/trejojulian/segui-tus-compras-backend:latest
