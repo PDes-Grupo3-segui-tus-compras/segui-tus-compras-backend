@@ -5,7 +5,7 @@ use Prometheus\RenderTextFormat;
 use Prometheus\CollectorRegistry;
 
 Route::get('/metrics', function () {
-    $registry = app(CollectorRegistry::class); // 👈 usa la instancia inyectada
+    $registry = app(CollectorRegistry::class);
     $renderer = new RenderTextFormat();
     $result = $renderer->render($registry->getMetricFamilySamples());
 
