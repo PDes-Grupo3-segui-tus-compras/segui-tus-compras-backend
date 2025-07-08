@@ -5,6 +5,7 @@ use App\Http\Controllers\API\MercadoLibreController;
 use App\Http\Controllers\API\MetricsController;
 use App\Http\Controllers\API\OpinionController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\RandomController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
     Route::get('/metrics', [MetricsController::class, 'getMetrics'])->middleware(AdminMiddleware::class);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
+    Route::get('/answer', [RandomController::class, 'responseToLifeTheUniverseAndEverything']);
 
     Route::apiResource('opinions', OpinionController::class);
 });
