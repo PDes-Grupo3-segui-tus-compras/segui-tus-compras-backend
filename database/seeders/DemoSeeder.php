@@ -20,7 +20,7 @@ class DemoSeeder extends Seeder {
             'user_type' => 'admin',
         ]));
 
-        for ($i = 1; $i <= 4; $i++) {
+        for ($i = 1; $i <= 8; $i++) {
             $users->push(User::create([
                 'name' => "User $i",
                 'email' => "user$i@example.com",
@@ -30,42 +30,42 @@ class DemoSeeder extends Seeder {
         }
 
         $catalogIds = [
-            'MLA29815169',
-            'MLA44209151',
-            'MLA39156350',
+            'MLA37215138',
+            'MLA28957154',
+            'MLA19750557',
             'MLA26800008',
             'MLA27106924',
             'MLA22868255',
             'MLA21807330',
-            'MLA50811016',
-            'MLA22429317',
-            'MLA19730731',
+            'MLA28797881',
+            'MLA22450840',
+            'MLA42525711',
         ];
 
         $names = [
-            'Luke Skywalker Star Wars Kenner Star Wars',
-            'Manga Pastelera Manga Pastelera Profesional',
-            'Box 24 Boosters Yu-Gi-Oh Yu-Gi-Oh Soul Fusion',
+            'Star Wars Force N Telling Vader Juguetes Star Wars',
+            'Olla De Aluminio Olla Aluminio Olla Pequeña Olla A Presión Color Gris 7litros 24 cm',
+            'Bloques para armar Lego LEGO CITY Lego City Caminhao Cegonha',
             'Cama ginecológica + banco + mesa auxiliar + escalera',
             'Kit con 3 cojines inflables: cilíndricos, en forma de U y triangulares',
             'Cama tapizada Cama Carro do Brasil Mini cama Aranha cuna color rojo',
             'Funko The Armorer (353) - Star Wars Madalorian (star Wars)',
-            'Magic Tcg Magic: The Gathering Neon Dynasty Booster',
-            'Muñeca Dragon Ball Harle Anime Seven Colección Dragon Ball',
-            'Figura Articulada Naruto Uzumaki Naruto',
+            'Shampoo para vehículo Rev Auto sin nombre Rev Auto de 29.573mL',
+            'Libro - Libro: El sello',
+            'Carpa De Camping Carpa 2 Personas Mundoshop Carpas Camping Impermeables Carpa Impermeable Portatil Carpa Para 2 Personas Carpa Araña Carpa Playa Camping Trekking',
         ];
 
         $images = [
-            'https://http2.mlstatic.com/D_NQ_NP_777021-MLU74180675839_012024-F.jpg',
-            'https://http2.mlstatic.com/D_NQ_NP_600416-MLA80793939162_112024-F.jpg',
-            'https://http2.mlstatic.com/D_NQ_NP_761854-MLU78252258355_082024-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_612839-MLA79451474907_092024-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_715069-MLU73425706911_122023-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_651217-MLU77573559262_072024-F.jpg',
             'https://http2.mlstatic.com/D_NQ_NP_753181-MLU78026951554_082024-F.jpg',
             'https://http2.mlstatic.com/D_NQ_NP_934685-MLU71763262495_092023-F.jpg',
             'https://http2.mlstatic.com/D_NQ_NP_795228-MLU54974250959_042023-F.jpg',
             'https://http2.mlstatic.com/D_NQ_NP_636296-MLA43636093932_092020-F.jpg',
-            'https://http2.mlstatic.com/D_NQ_NP_667483-MLA85495250953_052025-F.jpg',
-            'https://http2.mlstatic.com/D_NQ_NP_790818-MLA79495912633_092024-F.jpg',
-            'https://http2.mlstatic.com/D_NQ_NP_989155-MLM46571383339_062021-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_686173-MLU73292710010_122023-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_954080-MLU77233423012_072024-F.jpg',
+            'https://http2.mlstatic.com/D_NQ_NP_966148-MLA80358148865_102024-F.jpg',
         ];
 
         $products = collect();
@@ -75,12 +75,12 @@ class DemoSeeder extends Seeder {
                 'name' => $names[$i],
                 'image' => $images[$i],
                 'short_description' => 'Producto de muestra para testing',
-                'price' => rand(1000, 10000) / 100,
+                'price' => rand(1000, 10000),
             ]));
         }
 
         foreach ($users as $user) {
-            $purchasedProducts = $products->random(rand(2, 5));
+            $purchasedProducts = $products->random(rand(2, 10));
             foreach ($purchasedProducts as $product) {
                 Purchase::create([
                     'user_id' => $user->id,
@@ -91,7 +91,7 @@ class DemoSeeder extends Seeder {
                 ]);
             }
 
-            $favouriteProducts = $products->random(rand(2, 5));
+            $favouriteProducts = $products->random(rand(2, 10));
             $user->favouriteProducts()->syncWithoutDetaching($favouriteProducts->pluck('id')->toArray());
         }
     }
