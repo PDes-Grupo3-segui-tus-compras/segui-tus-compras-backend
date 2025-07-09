@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/products/favourite', [ProductController::class, 'favourite']);
     Route::get('/metrics', [MetricsController::class, 'getMetrics'])->middleware(AdminMiddleware::class);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
-    Route::get('/answer', [RandomController::class, 'responseToLifeTheUniverseAndEverything']);
+    //Route::get('/answer', [RandomController::class, 'responseToLifeTheUniverseAndEverything']);
 
     Route::apiResource('opinions', OpinionController::class);
 });
